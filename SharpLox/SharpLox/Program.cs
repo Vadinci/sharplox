@@ -4,7 +4,7 @@ using System.IO;
 
 namespace SharpLox
 {
-    class Program
+    class Lox
     {
         static Boolean hadError = false;
 
@@ -17,47 +17,48 @@ namespace SharpLox
             }
             else if (args.Length == 1)
             {
-                runFile(args[0]);
+                RunFile(args[0]);
             }
             else {
-                runPrompt();
+                RunPrompt();
             }
         }
 
         
 
-        private static void runFile(string path)
+        private static void RunFile(string path)
         {
             string program = File.ReadAllText(path);
-            run(program);
+            Run(program);
 
             if (hadError) return;
         }
 
-        private static void runPrompt()
+        private static void RunPrompt()
         {
             while (true) {
                 Console.Write("|> ");
-                run(Console.ReadLine());
+                Run(Console.ReadLine());
                 hadError = false;
             }
         }
 
-        private static void run(string program)
+        private static void Run(string program)
         {
             Scanner scanner = new Scanner(program);
-            List<Token> tokens = scanner.getTokens();
+            List<Token> tokens = scanner.ScanTokens();
 
-            for(Token t in tokens) {
-                Console.Write(token);
+            foreach(Token t in tokens)
+            {
+                Console.Write(t);
             }
         }
 
-        static void error(int line, string message) {
-            report(line, "", message);
+        public static void Error(int line, string message) {
+            Report(line, "", message);
         }
 
-        private static void report(int line, string where, string message) {
+        private static void Report(int line, string where, string message) {
             Console.Error.Write("[Line "+line+ "] Error" + where + ": " + message);
         }
     }
