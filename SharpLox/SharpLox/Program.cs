@@ -10,22 +10,6 @@ namespace SharpLox
 
         static void Main(string[] args)
         {
-            Expr expression = new Expr.Binary(
-                new Expr.Unary(
-                    new Token(TokenType.MINUS, "-", null, 1),
-                    new Expr.Literal(123)
-                ),
-                new Token(TokenType.STAR, "*", null, 1),
-                new Expr.Grouping(new Expr.Literal(45.67))
-            );
-
-            AstPrinter printer = new AstPrinter();
-
-            Console.Write(printer.Print(expression));
-
-
-
-            return;
 
             if (args.Length > 1)
             {
@@ -67,15 +51,29 @@ namespace SharpLox
             Scanner scanner = new Scanner(program);
             List<Token> tokens = scanner.ScanTokens();
 
-            foreach (Token t in tokens)
-            {
-                Console.Write(t);
-            }
+            Parser parser = new Parser(tokens);
+            Expr expression = parser.Parse();
+
+            if (hadError) return;
+
+            Console.Out.Write(new AstPrinter().Print(expression));
         }
 
         public static void Error(int line, string message)
         {
             Report(line, "", message);
+        }
+
+        public static void Error(Token token, string message)
+        {
+            if (token.type == TokenType.EOF)
+            {
+                Report(token.line, " at end", message);
+            }
+            else
+            {
+                Report(token.line, " at '" + token.lexeme + "'", message);
+            }
         }
 
         private static void Report(int line, string where, string message)
